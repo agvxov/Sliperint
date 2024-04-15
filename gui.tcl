@@ -7,18 +7,18 @@ if {![info exists ::WRAPPED]} {
     proc cGetWall {x, y} { return "true" }
 }
 
+set tileWidth 50
+
 wm title . "Ice Labyrinth"
 frame .board
 pack .board
 for {set x 0} {$x < $::width} {incr x} {
     for {set y 0} {$y < $::height} {incr y} {
-        canvas .board.c$x$y -width 50 -height 50
+        canvas .board.c$x$y -width $::tileWidth -height $tileWidth
         if {[cGetWall $x $y]} {
-            puts [cGetWall $x $y]
-            set a "-width 10"
+            .board.c$x$y create line 0 0 0 $tileWidth -fill black -width 10
+            grid .board.c$x$y -column $x -row $y 
         }
-        .board.c$x$y create line 0 0 0 50 -fill black {*}$a
-        grid .board.c$x$y -column $x -row $y 
     }
 }
 
