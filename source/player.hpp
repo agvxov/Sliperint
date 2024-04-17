@@ -12,14 +12,6 @@ typedef enum {
 
 struct player_t {
     coord_t position;
-
-    bool move(move_t direction) {
-        return true;
-    }
-
-    player_t(coord_t pos) : position(pos) {
-        ;
-    }
 };
 
 #endif
