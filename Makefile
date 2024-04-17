@@ -21,4 +21,4 @@ main: ${OBJECT}
 	${LINK.cpp} ${CXXFLAGS} $+ ${CXXLIBS}
 
 clean:
-	-rm ${OBJECT}
+	-rm ${OBJECT.d}/*.o
