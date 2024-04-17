@@ -4,7 +4,7 @@
 
 signed main() {
     Sliperinth * map = (
-        #include "test_map.inc"
+        #include "offical.inc"
     );
 
     Sliperinth_displayer_tk display(map);
