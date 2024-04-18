@@ -1,4 +1,4 @@
-(new Sliperinth_builder())
+(new Sliperint_builder())
     ->add_hwalls({true, true,  true, true,  true, true,  true})
     ->add_vwalls({true, true, false, false,  true, false,  false, true})
     ->add_hwalls({false, false, true, false, false, false, true})

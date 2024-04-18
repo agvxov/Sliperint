@@ -1,16 +1,16 @@
-#include "Sliperinth.hpp"
-#include "Sliperinth_displayer_tk.hpp"
+#include "Sliperint.hpp"
+#include "Sliperint_displayer_tk.hpp"
 #include "sliperint_solver.hpp"
 
 signed main() {
-    Sliperinth * map = (
+    Sliperint * map = (
         #include "offical.inc"
     );
 
-    Sliperinth_displayer_tk display(map);
-    display.update();
+    //Sliperint_displayer_tk display(map);
+    Sliperint_displayer_basic display(map);
 
-    solve(map);
+    solve(map, &display);
 
     return 0;
 }
