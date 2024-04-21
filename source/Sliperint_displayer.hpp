@@ -14,6 +14,8 @@ public:
     virtual void update(move_t m) = 0;
 
     virtual void pop() = 0;
+
+    virtual void success(int i) = 0;
 };
 
 class Sliperint_displayer_basic : public Sliperint_displayer {
@@ -63,6 +65,10 @@ public:
         }
         fflush(stdout);
         prefix.pop_back();
+    }
+
+    void success(int i) {
+        printf("\n### Achived the goal state after %d steps of descent ###\n", i);
     }
 };
 

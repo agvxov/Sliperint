@@ -13,6 +13,13 @@ static void * labyrinth;
 typedef wall_t (*wall_getter_t)(void *, int, int);
 
 static
+int Tcl_cGetState(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+    const char * r = (char*)get_state(labyrinth);
+    Tcl_SetResult(interp, (char*)r, TCL_STATIC);
+    return TCL_OK;
+}
+
+static
 const char * getWallHepler(Tcl_Interp *interp, const char **argv, wall_getter_t f) {
     static int x, y;
     sscanf(argv[1], "%d", &x);
@@ -100,6 +107,7 @@ void tcl_run(void) {
     TCL_EASY_CREATE_COMMAND(cGetPlayerY);
     TCL_EASY_CREATE_COMMAND(cGetGoalX);
     TCL_EASY_CREATE_COMMAND(cGetGoalY);
+    TCL_EASY_CREATE_COMMAND(cGetState);
 
     int result = Tcl_EvalFile(interp, "gui.tcl");
     if (result == TCL_ERROR) {

@@ -3,14 +3,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <algorithm>
+#include <random>
+#include <chrono>
 
 bool is_valid(Sliperint * s) {
     return true;
 }
 
 bool is_operator(Sliperint * s, move_t m) {
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wswitch"
     switch (m) {
         case MOVE_UP: {
             return not s->hlayout()
@@ -36,14 +37,16 @@ bool is_operator(Sliperint * s, move_t m) {
                         [s->player.position.x + 1]
             ;
         };
+        case END_MOVE: {
+            assert(("END_MOVE was tested as a possible operator.", false));
+        }
     }
-    #pragma GCC diagnostic pop
 
     return false;
 }
 
 bool is_in_goal_state(Sliperint * s) {
-    return s->goal.x == s->player.position.y
+    return s->goal.x == s->player.position.x
         && s->goal.y == s->player.position.y
     ;
 }
@@ -85,6 +88,7 @@ void apply_operator(Sliperint * s, move_t m) {
     }
 }
 
+static
 move_t inverse(move_t m) {
     switch (m) {
         case MOVE_UP:
@@ -102,15 +106,31 @@ move_t inverse(move_t m) {
 }
 
 static
-void _solve(Sliperint * const sliperint, Sliperint_displayer * const display, move_t last_direction) {
+const move_t * random_move_order() {
+    static move_t r[END_MOVE+1] = {MOVE_UP, MOVE_RIGHT, MOVE_LEFT, MOVE_DOWN, END_MOVE};
+    //static std::default_random_engine generator(0);
+    static std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
+    std::shuffle(r, r + END_MOVE, generator);
+    return r;
+}
+
+
+static
+bool _solve(Sliperint * const sliperint, Sliperint_displayer * const display, const move_t last_direction, const int recursion_counter) {
     display->update(last_direction);
 
     if (is_in_goal_state(sliperint)) {
-        goto END;
+        display->success(recursion_counter);
+        return true;
     }
 
-    for (move_t m = (move_t)0; m < END_MOVE; m = (move_t)((int)m + 1)) {
-        Sliperint * s = new Sliperint(*sliperint);
+    move_t ms[END_MOVE+1];
+    memcpy(ms, random_move_order(), (END_MOVE+1) * sizeof(move_t));
+    for (move_t * mi = ms; *mi != END_MOVE; ++mi) {
+        const auto &m = *mi;
+        std::unique_ptr<Sliperint> scpy = std::make_unique<Sliperint>(*sliperint);
+        Sliperint * s = scpy.get();
+
         if (m == last_direction
         ||  m == inverse(last_direction)
         ||  not is_operator(s, m)) {
@@ -119,18 +139,23 @@ void _solve(Sliperint * const sliperint, Sliperint_displayer * const display, mo
 
         apply_operator(s, m);
 
+        // XXX: theres a race condition here;
+        // its possible that the displayer is keep trying to query the Sliperint
+        //   after the function has returned at which point it has already been deleted.
+        // the solution should be make the display store a copy
+        //   and implement the operator = for copy and += for player/goal copy
         display->sliperint = s;
 
         sleep(1);
-        _solve(s, display, m);
-        delete s;
+        if (_solve(s, display, m, recursion_counter + 1)) {
+            return true;
+        }
     }
 
-END: 
     display->pop();
-    return;
+    return false;
 }
 
 void solve(Sliperint * const sliperint, Sliperint_displayer * const display) {
-    _solve(sliperint, display, END_MOVE);
+    _solve(sliperint, display, END_MOVE, 0);
 }

@@ -11,6 +11,7 @@ extern void tcl_set_border(int x, int y, bool v);
 
 // XXX
 #include "atom.h"
+extern const char * get_state(void * lab);
 extern wall_t get_vwall(void * lab, int x, int y);
 extern wall_t get_hwall(void * lab, int x, int y);
 extern int get_player_x(void * lab);

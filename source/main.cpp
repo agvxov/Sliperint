@@ -12,5 +12,7 @@ signed main() {
 
     solve(map, &display);
 
+    while (true) { ; }
+
     return 0;
 }

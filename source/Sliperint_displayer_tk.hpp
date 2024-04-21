@@ -8,6 +8,8 @@ extern "C" {
 
 class Sliperint_displayer_tk : public Sliperint_displayer {
 public:
+    int success_recursion = -1;
+
     Sliperint_displayer_tk(Sliperint * lab) : Sliperint_displayer(lab) {
         tcl_setup(sliperint->hlayout().size(), sliperint->vlayout().size() - 1, this);
         tcl_loop();
@@ -19,6 +21,10 @@ public:
 
     void pop() {
         ;
+    }
+
+    void success(int i) {
+        success_recursion = i;
     }
 };
 
@@ -40,5 +46,17 @@ C_GETTER(player_y, int, , player.position.y)
 C_GETTER(goal_x, int, , goal.x)
 
 C_GETTER(goal_y, int, , goal.y)
+
+extern "C"
+const char * get_state(void * d) {
+    static char * r;
+    const Sliperint_displayer_tk &tk = *((Sliperint_displayer_tk*)d);
+    if (tk.success_recursion == -1) {
+        return "Searching...";
+    } else {
+        asprintf(&r, "Found the solution in %d steps of descend!", tk.success_recursion);
+        return r;
+    }
+}
 
 #endif

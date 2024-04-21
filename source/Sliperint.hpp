@@ -97,7 +97,7 @@ class Sliperint_builder {
     
 public:
     Sliperint_builder * add_hwalls(std::vector<wall_t> w) {
-        for (int i = 0; i < w.size(); i++) {
+        for (decltype(w.size()) i = 0; i < w.size(); i++) {
             sliperint->validate_coord((coord_t){i, hwal_counter});
             sliperint->hlayout()[i][hwal_counter] = w[i];
         }

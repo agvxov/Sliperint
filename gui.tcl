@@ -10,13 +10,14 @@ if {![info exists ::WRAPPED]} {
 
 set tileWidth 50
 set wallWidth 10
-set playerOldPosition {0 0}
+set playerOldPosition [list [cGetPlayerX] [cGetPlayerY]]
 set playerPosition {0 0}
 
 wm title . "Sliperinth"
 frame .board
 pack .board
-
+label .messageBox
+pack .messageBox
 
 proc drawWalls {} {
     proc new_tile {x y width height} {
@@ -77,14 +78,20 @@ proc displayGoal {} {
     draw_circle [cGetGoalX] [cGetGoalY] red
 }
 
+proc displayMessage {} {
+    .messageBox configure -text [cGetState]
+}
+
 proc updateDisplay {} {
     cUpdateDisplay
     displayPlayer
+    displayMessage
     after 100 updateDisplay
 }
 
 drawWalls
 displayGoal
+displayMessage
 
 after 100 updateDisplay
 bind . <Destroy> {exit}
