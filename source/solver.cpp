@@ -1,4 +1,4 @@
-#include "sliperint_solver.hpp"
+#include "solver.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -14,26 +14,26 @@ bool is_operator(Sliperint * s, move_t m) {
     switch (m) {
         case MOVE_UP: {
             return not s->hlayout()
-                        [s->player.position.y]
                         [s->player.position.x]
+                        [s->player.position.y]
             ;
         };
         case MOVE_DOWN: {
             return not s->hlayout()
-                        [s->player.position.y + 1]
                         [s->player.position.x]
+                        [s->player.position.y + 1]
             ;
         };
         case MOVE_LEFT: {
             return not s->vlayout()
-                        [s->player.position.x]
                         [s->player.position.y]
+                        [s->player.position.x]
             ;
         };
         case MOVE_RIGHT: {
             return not s->vlayout()
-                        [s->player.position.x + 1]
                         [s->player.position.y]
+                        [s->player.position.x + 1]
             ;
         };
     }
@@ -57,12 +57,12 @@ void apply_operator(Sliperint * s, move_t m) {
         case MOVE_UP:
         case MOVE_DOWN:
             to_modify = &(s->player.position.y);
-            wall = s->hlayout()[s->player.position.y].begin() + s->player.position.x;
+            wall = s->hlayout()[s->player.position.x].begin();
             break;
         case MOVE_LEFT:
         case MOVE_RIGHT:
             to_modify = &(s->player.position.x);
-            wall = s->vlayout()[s->player.position.x].begin() + s->player.position.y;
+            wall = s->vlayout()[s->player.position.y].begin();
             break;
     }
 
@@ -75,6 +75,7 @@ void apply_operator(Sliperint * s, move_t m) {
         case MOVE_DOWN:
         case MOVE_RIGHT:
             modify_with = 1;
+            ++wall;
             break;
     }
     #pragma GCC diagnostic pop
@@ -105,11 +106,11 @@ void _solve(Sliperint * const sliperint, Sliperint_displayer * const display, mo
     display->update(last_direction);
 
     if (is_in_goal_state(sliperint)) {
-        return;
+        goto END;
     }
 
-    Sliperint * s = new Sliperint(*sliperint);
     for (move_t m = (move_t)0; m < END_MOVE; m = (move_t)((int)m + 1)) {
+        Sliperint * s = new Sliperint(*sliperint);
         if (m == last_direction
         ||  m == inverse(last_direction)
         ||  not is_operator(s, m)) {
@@ -118,12 +119,16 @@ void _solve(Sliperint * const sliperint, Sliperint_displayer * const display, mo
 
         apply_operator(s, m);
 
-        last_direction = m;
         display->sliperint = s;
 
-        _solve(s, display, last_direction);
+        sleep(1);
+        _solve(s, display, m);
+        delete s;
     }
-    delete s;
+
+END: 
+    display->pop();
+    return;
 }
 
 void solve(Sliperint * const sliperint, Sliperint_displayer * const display) {

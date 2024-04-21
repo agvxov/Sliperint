@@ -9,11 +9,15 @@ extern "C" {
 class Sliperint_displayer_tk : public Sliperint_displayer {
 public:
     Sliperint_displayer_tk(Sliperint * lab) : Sliperint_displayer(lab) {
-        tcl_setup(sliperint->vlayout()[0].size(), sliperint->vlayout().size(), this);
+        tcl_setup(sliperint->hlayout().size(), sliperint->vlayout().size() - 1, this);
         tcl_loop();
     }
 
     void update(move_t m) {
+        ;
+    }
+
+    void pop() {
         ;
     }
 };
@@ -27,7 +31,7 @@ RETURN get_ ## NAME(void * d ARGV) { \
 
 C_GETTER(vwall, wall_t, COMMA int x COMMA int y, vlayout()[y][x])
 
-C_GETTER(hwall, wall_t, COMMA int x COMMA int y, hlayout()[y][x])
+C_GETTER(hwall, wall_t, COMMA int x COMMA int y, hlayout()[x][y])
 
 C_GETTER(player_x, int, , player.position.x)
 

@@ -6,7 +6,7 @@ CXXLIBS := $$(pkg-config --cflags --libs tk)
 SOURCE.d := source/
 OBJECT.d := object/
 
-SOURCE := main.cpp tk_display.c sliperint_solver.cpp
+SOURCE := main.cpp tk_display.c solver.cpp
 OBJECT := $(addsuffix .o,$(basename ${SOURCE}))
 SOURCE := $(addprefix ${SOURCE.d}, ${SOURCE})
 OBJECT := $(addprefix ${OBJECT.d}, ${OBJECT})

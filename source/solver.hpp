@@ -1,5 +1,5 @@
-#ifndef SLIPERINT_SOLVER_HPP
-#define SLIPERINT_SOLVER_HPP
+#ifndef SOLVER_HPP
+#define SOLVER_HPP
 
 #include "Sliperint.hpp"
 #include "Sliperint_displayer.hpp"

@@ -4,7 +4,8 @@ if {![info exists ::WRAPPED]} {
     set ::width 10
     set ::height 10
     proc cUpdateDisplay {} {}
-    proc cGetWall {x, y} { return "true" }
+    proc cGetHWall {x, y} { return "true" }
+    proc cGetVWall {x, y} { return "true" }
 }
 
 set tileWidth 50
@@ -31,39 +32,30 @@ proc drawWalls {} {
         $canvas create line 0 0 0 $::tileWidth -fill black -width $::wallWidth
     }
 
-    set limit [expr $::height - 1]
-    set limit2 [expr $::width - 1]
+    set height_limit [expr $::height - 1]
+    set width_limit [expr $::width - 1]
 
-    for {set i 0} {$i < $limit} {incr i} {
-        for {set h 0} {$h < $limit2} {incr h} {
-            new_tile $h $i $::tileWidth $::tileWidth
-        }
-    }
-
-    for {set i 0} {$i < $limit} {incr i} {
-        for {set h 0} {$h < $limit2} {incr h} {
-            if {[cGetVWall $h $i]} {
-                vertical_wall .board.c$h$i
+    # create and fill the full sized tiles
+    for {set i 0} {$i < $::width} {incr i} {
+        for {set h 0} {$h < $::height} {incr h} {
+            new_tile $i $h $::tileWidth $::tileWidth
+            if {[cGetVWall $i $h]} {
+                vertical_wall .board.c$i$h
             }
-            if {[cGetHWall $h $i]} {
-                horizontal_wall .board.c$h$i
+            if {[cGetHWall $i $h]} {
+                horizontal_wall .board.c$i$h
             }
         }
     }
 
-
-    for {set i 0} {$i < [expr $limit + 1]} {incr i} {
-        if {[cGetVWall $limit2 $i]} {
-            new_tile $limit $i $::wallWidth $::tileWidth
-            vertical_wall .board.c$limit$i
-        }
+    for {set i 0} {$i < $::height} {incr i} {
+        new_tile $::width $i $::wallWidth $::tileWidth
+        vertical_wall .board.c$::width$i
     }
 
-    for {set i 0} {$i < [expr $limit2 + 1]} {incr i} {
-        if {[cGetHWall $i $limit]} {
-            new_tile $i $limit $::tileWidth $::wallWidth
-            horizontal_wall .board.c$i$limit
-        }
+    for {set i 0} {$i < $::width} {incr i} {
+        new_tile $i $::height $::tileWidth $::wallWidth
+        horizontal_wall .board.c$i$::height
     }
 }
 
@@ -75,7 +67,7 @@ proc draw_circle {x y color} {
 proc displayPlayer {} {
     set ::playerPosition [list [cGetPlayerX] [cGetPlayerY]]
 
-    #draw_circle {*}$::playerOldPosition white
+    draw_circle {*}$::playerOldPosition white
     draw_circle {*}$::playerPosition blue
 
     set ::playerOldPosition $::playerPosition

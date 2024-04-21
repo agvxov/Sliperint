@@ -59,11 +59,18 @@ public:
     void validate_coord(coord_t c) {
         if (c.y >= vlayout().size()) {
             vlayout().resize(c.y + 1);
-            hlayout().resize(c.y + 1);
         }
+
+        if (c.x >= hlayout().size()) {
+            hlayout().resize(c.x + 1);
+        }
+
         if (c.x >= vlayout()[c.y].size()) {
             vlayout()[c.y].resize(c.x + 1, false);
-            hlayout()[c.y].resize(c.x + 1, false);
+        }
+
+        if (c.y >= hlayout()[c.x].size()) {
+            hlayout()[c.x].resize(c.y + 1, false);
         }
     }
 
@@ -74,11 +81,11 @@ public:
         vlayout()[y] = w;
     }
 
-    void set_hwalls(point_t y, std::vector<wall_t> w) {
+    void set_hwalls(point_t x, std::vector<wall_t> w) {
         validate_coord(
-            (coord_t){ .x = 0, .y = y, }
+            (coord_t){ .x = x, .y = 0, }
         );
-        hlayout()[y] = w;
+        hlayout()[x] = w;
     }
 };
 
@@ -90,7 +97,11 @@ class Sliperint_builder {
     
 public:
     Sliperint_builder * add_hwalls(std::vector<wall_t> w) {
-        sliperint->set_hwalls(hwal_counter++, w);
+        for (int i = 0; i < w.size(); i++) {
+            sliperint->validate_coord((coord_t){i, hwal_counter});
+            sliperint->hlayout()[i][hwal_counter] = w[i];
+        }
+        ++hwal_counter;
         return this;
     }
 
@@ -110,7 +121,15 @@ public:
     }
 
     Sliperint * build() {
-        assert(sliperint->hlayout().size() == sliperint->vlayout().size());
+        //// Size match checking
+        //// -- first coord
+        //assert(sliperint->hlayout().size() == sliperint->vlayout()[0].size());
+        //assert(sliperint->vlayout().size() == sliperint->hlayout()[0].size());
+        //// -- last coord
+        //assert(sliperint->hlayout()[0].size() == (*(sliperint->hlayout().end() - 1)).size());
+        //assert(sliperint->vlayout()[0].size() == (*(sliperint->vlayout().end() - 1)).size());
+        //// -- we seriously hope the Dev did not manage to make the middle differently dimensioned somehow
+
         return this->sliperint;
     }
 };
