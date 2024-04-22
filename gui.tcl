@@ -13,7 +13,7 @@ set wallWidth 10
 set playerOldPosition [list [cGetPlayerX] [cGetPlayerY]]
 set playerPosition {0 0}
 
-wm title . "Sliperinth"
+wm title . "Sliperint"
 frame .board
 pack .board
 label .messageBox
