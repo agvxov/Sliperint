@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <vector>
+#include <tuple>
+#include <queue>
 #include <algorithm>
 #include <random>
 #include <chrono>
@@ -100,7 +103,7 @@ move_t inverse(move_t m) {
         case MOVE_LEFT:
             return MOVE_RIGHT;
         case END_MOVE:
-            return MOVE_LEFT;
+            return (move_t)-1;
     }
     return END_MOVE;
 }
@@ -141,7 +144,6 @@ bool _solve(Sliperint * const sliperint, Sliperint_displayer * const display, co
 
         *(display->sliperint) += *s;
 
-        //sleep(1);
         if (_solve(s, display, m, recursion_counter + 1)) {
             return true;
         }
@@ -151,6 +153,52 @@ bool _solve(Sliperint * const sliperint, Sliperint_displayer * const display, co
     return false;
 }
 
+static
+bool _solve2(Sliperint * const sliperint, Sliperint_displayer * const display) {
+    std::queue<std::tuple<Sliperint*, move_t>> branched_states;
+    branched_states.push(std::make_tuple(sliperint, END_MOVE));
+    int descent_counter = 0;
+
+    display->update(END_MOVE);
+
+    while (not branched_states.empty()) {
+        Sliperint * current_sliperint = std::get<0>(branched_states.front());
+        move_t last_direction = std::get<1>(branched_states.front());
+        branched_states.pop();
+
+        *(display->sliperint) += *current_sliperint;
+        display->update(last_direction);
+
+        if (is_in_goal_state(current_sliperint)) {
+            display->success(descent_counter);
+            return true;
+        }
+
+        ++descent_counter;
+
+        move_t ms[END_MOVE+1];
+        memcpy(ms, random_move_order(), (END_MOVE+1) * sizeof(move_t));
+        for (move_t * mi = ms; *mi != END_MOVE; ++mi) {
+            const auto &m = *mi;
+            Sliperint * up_comming_sliperint = new Sliperint(*current_sliperint);
+
+            if (m == last_direction
+            ||  m == inverse(last_direction)
+            ||  not is_operator(up_comming_sliperint, m)) {
+                continue;
+            }
+
+            apply_operator(up_comming_sliperint, m);
+
+            branched_states.push(std::make_tuple(up_comming_sliperint, m));
+        }
+        delete current_sliperint;
+    }
+
+    return false;
+}
+
 void solve(Sliperint * const sliperint, Sliperint_displayer * const display) {
-    _solve(sliperint, display, END_MOVE, 0);
+    //_solve(sliperint, display, END_MOVE, 0);
+    _solve2(sliperint, display);
 }
