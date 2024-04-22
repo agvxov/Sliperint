@@ -1,7 +1,8 @@
 # Sliperint
 > "Slippery labyrinth" abbreviated to hell and back. Maze game with classical path finding AI.
 
-![demo](demo.png)
+![demo1](documentation/demo1.png)
+![demo2](documentation/demo2.png)
 
 NOTE: The blank looking ball mark where the player (blue ball) has been to.
 
