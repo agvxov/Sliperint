@@ -139,14 +139,9 @@ bool _solve(Sliperint * const sliperint, Sliperint_displayer * const display, co
 
         apply_operator(s, m);
 
-        // XXX: theres a race condition here;
-        // its possible that the displayer is keep trying to query the Sliperint
-        //   after the function has returned at which point it has already been deleted.
-        // the solution should be make the display store a copy
-        //   and implement the operator = for copy and += for player/goal copy
-        display->sliperint = s;
+        *(display->sliperint) += *s;
 
-        sleep(1);
+        //sleep(1);
         if (_solve(s, display, m, recursion_counter + 1)) {
             return true;
         }

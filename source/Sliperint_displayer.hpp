@@ -6,9 +6,9 @@
 
 class Sliperint_displayer {
 public:
-    Sliperint * sliperint;
-    Sliperint_displayer(Sliperint * lab) : sliperint(lab) {
-        ;
+    Sliperint * sliperint = new Sliperint();
+    Sliperint_displayer(Sliperint * lab) {
+        *sliperint = *lab;
     }
 
     virtual void update(move_t m) = 0;

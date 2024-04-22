@@ -87,6 +87,20 @@ public:
         );
         hlayout()[x] = w;
     }
+
+    Sliperint& operator=(const Sliperint& other) {
+        _vlayout = std::make_shared<std::vector<std::vector<wall_t>>>(*other._vlayout);
+        _hlayout = std::make_shared<std::vector<std::vector<wall_t>>>(*other._hlayout);
+        goal = other.goal;
+        player.position = other.player.position;
+        return *this;
+    }
+
+    Sliperint& operator+=(const Sliperint& other) {
+        goal = other.goal;
+        player.position = other.player.position;
+        return *this;
+    }
 };
 
 class Sliperint_builder {
