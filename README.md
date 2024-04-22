@@ -3,7 +3,7 @@
 
 ![demo](demo.png)
 
-NOTE: The blank looking ball mark where the player (blue ball) has been.
+NOTE: The blank looking ball mark where the player (blue ball) has been to.
 
 ### Original task description
 > Let's roll the ball into the marked field of the labyrinth shown on the 21st
