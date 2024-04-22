@@ -18,7 +18,7 @@ object/%.o: source/%.cpp
 	${COMPILE.cpp} ${CXXFLAGS} $+ -o $@
 
 main: ${OBJECT}
-	${LINK.cpp} ${CXXFLAGS} $+ ${CXXLIBS}
+	${LINK.cpp} ${CXXFLAGS} $+ ${CXXLIBS} -o sliperint.out
 
 clean:
 	-rm ${OBJECT.d}/*.o
