@@ -16,7 +16,7 @@ public:
     }
 
     void update(move_t m) {
-        ;
+        sleep(1);
     }
 
     void pop() {
