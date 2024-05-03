@@ -1,11 +1,17 @@
 package require Tk
 
+# if not invoked from C, run in testing mode, with dummy data
 if {![info exists ::WRAPPED]} {
     set ::width 10
     set ::height 10
     proc cUpdateDisplay {} {}
     proc cGetHWall {x, y} { return "true" }
     proc cGetVWall {x, y} { return "true" }
+    proc cGetPlayerX {} { return 0 }
+    proc cGetPlayerY {} { return 0 }
+    proc cGetGoalX {} { return 1 }
+    proc cGetGoalY {} { return 1 }
+    proc cGetState {} { return "testing..." }
 }
 
 set tileWidth 50

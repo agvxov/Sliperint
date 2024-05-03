@@ -7,6 +7,8 @@ extern void tcl_setup(int w, int h, void * lab);
 
 extern void tcl_loop(void);
 
+extern void tcl_loop_interactive(void);
+
 extern void tcl_set_border(int x, int y, bool v);
 
 // XXX
@@ -18,5 +20,7 @@ extern int get_player_x(void * lab);
 extern int get_player_y(void * lab);
 extern int get_goal_x(void * lab);
 extern int get_goal_y(void * lab);
+extern void display_back(void * d);
+extern void display_next(void * d);
 
 #endif

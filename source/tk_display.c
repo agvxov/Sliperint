@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <tcl.h>
 #include <tk.h>
 
 static Tcl_Obj * tcl_player_position;
@@ -79,12 +80,20 @@ int Tcl_cUpdateDisplay(ClientData clientData, Tcl_Interp *interp, int argc, cons
 }
 
 static
-void tcl_run(void) {
-    Tcl_Interp * interp = Tcl_CreateInterp();
-    if (interp == NULL) {
-        fprintf(stderr, "Can't creae Tcl interpreter\n");
-        exit(1);
-    }
+int Tcl_cBack(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+    display_back(labyrinth);
+    return TCL_OK;
+}
+
+static
+int Tcl_cNext(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+    display_next(labyrinth);
+    return TCL_OK;
+}
+
+static inline 
+void tcl_run_init(Tcl_Interp * interp) {
+    Tcl_Init(interp);
     Tk_Init(interp);
 
     Tcl_SetVar(interp, "WRAPPED", "true", 0); 
@@ -108,12 +117,46 @@ void tcl_run(void) {
     TCL_EASY_CREATE_COMMAND(cGetGoalX);
     TCL_EASY_CREATE_COMMAND(cGetGoalY);
     TCL_EASY_CREATE_COMMAND(cGetState);
+}
 
-    int result = Tcl_EvalFile(interp, "gui.tcl");
-    if (result == TCL_ERROR) {
-        fprintf(stderr, "Tcl script execution failed: %s\n", Tcl_GetStringResult(interp));
-        exit(1);
-    }
+#define CHECK_INTERPRETER(interp) do { \
+    if (interp == NULL) { \
+        fprintf(stderr, "Can't creae Tcl interpreter\n"); \
+        exit(1); \
+    } \
+} while (0);
+
+#define CHECK_SCRIPT_LOAD(interp, file) do { \
+    int result = Tcl_EvalFile(interp, file); \
+    if (result == TCL_ERROR) { \
+        fprintf(stderr, "Tcl script execution failed: %s\n", Tcl_GetStringResult(interp)); \
+        exit(1); \
+    } \
+} while (0);
+
+static
+void tcl_run(void) {
+    Tcl_Interp * interp = Tcl_CreateInterp();
+    CHECK_INTERPRETER(interp);
+
+    tcl_run_init(interp);
+
+    CHECK_SCRIPT_LOAD(interp, "gui.tcl");
+
+    Tk_MainLoop();
+}
+
+static
+void tcl_run_interactive(void) {
+    Tcl_Interp * interp = Tcl_CreateInterp();
+    CHECK_INTERPRETER(interp);
+
+    tcl_run_init(interp);
+
+    TCL_EASY_CREATE_COMMAND(cBack);
+    TCL_EASY_CREATE_COMMAND(cNext);
+
+    CHECK_SCRIPT_LOAD(interp, "gui_interactive.tcl");
 
     Tk_MainLoop();
 }
@@ -127,4 +170,9 @@ void tcl_setup(int w, int h, void * lab) {
 void tcl_loop(void) {
     pthread_t tcl_thread;
     pthread_create(&tcl_thread, NULL, (void *(*)(void*))tcl_run, (void*)NULL);
+}
+
+void tcl_loop_interactive(void) {
+    pthread_t tcl_thread;
+    pthread_create(&tcl_thread, NULL, (void *(*)(void*))tcl_run_interactive, (void*)NULL);
 }

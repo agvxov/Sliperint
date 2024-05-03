@@ -1,7 +1,7 @@
 CFLAGS := -Wall -Wpedantic -ggdb
 CXXFLAGS := -Wall -Wpedantic -ggdb -std=c++20
 
-CXXLIBS := $$(pkg-config --cflags --libs tk)
+CXXLIBS := $$(pkg-config --cflags --libs tcl tk)
 
 SOURCE.d := source/
 OBJECT.d := object/
