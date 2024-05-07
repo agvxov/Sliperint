@@ -16,6 +16,8 @@ public:
     virtual void pop() = 0;
 
     virtual void success(int i) = 0;
+
+    int success_value = -1;
 };
 
 class Sliperint_displayer_basic : public Sliperint_displayer {

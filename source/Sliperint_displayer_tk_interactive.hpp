@@ -10,7 +10,6 @@ class Sliperint_displayer_tk_interactive : public Sliperint_displayer {
 public:
     std::vector<Sliperint*> states;
     int position = 0;
-    int success_recursion = -1;
 
     Sliperint_displayer_tk_interactive(Sliperint * lab) : Sliperint_displayer(lab) {
         states.push_back(new Sliperint(*lab));
@@ -27,7 +26,7 @@ public:
     }
 
     void success(int i) {
-        success_recursion = i;
+        success_value = i;
         sliperint = states[0];
     }
 };
