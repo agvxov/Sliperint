@@ -13,8 +13,10 @@ static void * labyrinth;
 
 typedef wall_t (*wall_getter_t)(void *, int, int);
 
+#define TCL_ARGS ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
+
 static
-int Tcl_cGetState(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+int Tcl_cGetState(TCL_ARGS) {
     const char * r = (char*)get_state(labyrinth);
     Tcl_SetResult(interp, (char*)r, TCL_STATIC);
     return TCL_OK;
@@ -29,21 +31,21 @@ const char * getWallHepler(Tcl_Interp *interp, const char **argv, wall_getter_t 
 }
 
 static
-int Tcl_cGetVWall(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+int Tcl_cGetVWall(TCL_ARGS) {
     const char * r = getWallHepler(interp, argv, get_vwall);
     Tcl_SetResult(interp, (char*)r, TCL_STATIC);
     return TCL_OK;
 }
 
 static
-int Tcl_cGetHWall(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+int Tcl_cGetHWall(TCL_ARGS) {
     const char * r = getWallHepler(interp, argv, get_hwall);
     Tcl_SetResult(interp, (char*)r, TCL_STATIC);
     return TCL_OK;
 }
 
 static
-int Tcl_cGetPlayerX(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+int Tcl_cGetPlayerX(TCL_ARGS) {
     char r[3];
     sprintf(r, "%d", get_player_x(labyrinth));
     Tcl_SetResult(interp, r, TCL_STATIC);
@@ -51,7 +53,7 @@ int Tcl_cGetPlayerX(ClientData clientData, Tcl_Interp *interp, int argc, const c
 }
 
 static
-int Tcl_cGetPlayerY(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+int Tcl_cGetPlayerY(TCL_ARGS) {
     char r[3];
     sprintf(r, "%d", get_player_y(labyrinth));
     Tcl_SetResult(interp, r, TCL_STATIC);
@@ -59,7 +61,7 @@ int Tcl_cGetPlayerY(ClientData clientData, Tcl_Interp *interp, int argc, const c
 }
 
 static
-int Tcl_cGetGoalX(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+int Tcl_cGetGoalX(TCL_ARGS) {
     char r[3];
     sprintf(r, "%d", get_goal_x(labyrinth));
     Tcl_SetResult(interp, r, TCL_STATIC);
@@ -67,7 +69,7 @@ int Tcl_cGetGoalX(ClientData clientData, Tcl_Interp *interp, int argc, const cha
 }
 
 static
-int Tcl_cGetGoalY(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+int Tcl_cGetGoalY(TCL_ARGS) {
     char r[3];
     sprintf(r, "%d", get_goal_y(labyrinth));
     Tcl_SetResult(interp, r, TCL_STATIC);
@@ -75,18 +77,18 @@ int Tcl_cGetGoalY(ClientData clientData, Tcl_Interp *interp, int argc, const cha
 }
 
 static
-int Tcl_cUpdateDisplay(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+int Tcl_cUpdateDisplay(TCL_ARGS) {
     return TCL_OK;
 }
 
 static
-int Tcl_cBack(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+int Tcl_cBack(TCL_ARGS) {
     display_back(labyrinth);
     return TCL_OK;
 }
 
 static
-int Tcl_cNext(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv) {
+int Tcl_cNext(TCL_ARGS) {
     display_next(labyrinth);
     return TCL_OK;
 }
