@@ -14,6 +14,9 @@ static void * labyrinth;
 typedef wall_t (*wall_getter_t)(void *, int, int);
 
 #define TCL_ARGS ClientData clientData, Tcl_Interp *interp, int argc, const char **argv
+#define TCL_EASY_CREATE_COMMAND(c) do { \
+    Tcl_CreateCommand(interp, #c, Tcl_ ## c, (ClientData)NULL, (void (*)())NULL); \
+} while (0)
 
 static
 int Tcl_cGetState(TCL_ARGS) {
@@ -108,9 +111,6 @@ void tcl_run_init(Tcl_Interp * interp) {
 
     tcl_player_position = Tcl_NewListObj(0, NULL);
 
-    #define TCL_EASY_CREATE_COMMAND(c) do { \
-        Tcl_CreateCommand(interp, #c, Tcl_ ## c, (ClientData)NULL, (void (*)())NULL); \
-    } while (0)
     TCL_EASY_CREATE_COMMAND(cUpdateDisplay);
     TCL_EASY_CREATE_COMMAND(cGetHWall);
     TCL_EASY_CREATE_COMMAND(cGetVWall);
