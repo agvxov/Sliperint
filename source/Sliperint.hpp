@@ -101,13 +101,18 @@ public:
         player.position = other.player.position;
         return *this;
     }
+
+    bool operator==(const Sliperint& other) const {
+        return player.position.x == other.player.position.x
+            && player.position.y == other.player.position.y;
+    }
 };
 
 class Sliperint_builder {
     Sliperint * sliperint = new Sliperint();
     
-    int hwal_counter = 0;
-    int vwal_counter = 0;
+    size_t hwal_counter = 0;
+    size_t vwal_counter = 0;
     
 public:
     Sliperint_builder * add_hwalls(std::vector<wall_t> w) {
@@ -135,15 +140,6 @@ public:
     }
 
     Sliperint * build() {
-        //// Size match checking
-        //// -- first coord
-        //assert(sliperint->hlayout().size() == sliperint->vlayout()[0].size());
-        //assert(sliperint->vlayout().size() == sliperint->hlayout()[0].size());
-        //// -- last coord
-        //assert(sliperint->hlayout()[0].size() == (*(sliperint->hlayout().end() - 1)).size());
-        //assert(sliperint->vlayout()[0].size() == (*(sliperint->vlayout().end() - 1)).size());
-        //// -- we seriously hope the Dev did not manage to make the middle differently dimensioned somehow
-
         return this->sliperint;
     }
 };

@@ -8,8 +8,10 @@ signed main() {
         #include "offical.inc"
     );
 
-    //Sliperint_displayer_basic display(map);
-    //Sliperint_displayer_tk display(map);
+    #if 0
+    Sliperint_displayer_basic display(map);
+    Sliperint_displayer_tk display(map);
+    #endif
     Sliperint_displayer_tk_interactive display(map);
 
     solve(map, &display);

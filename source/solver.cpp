@@ -1,11 +1,10 @@
 #include "solver.hpp"
 
-#include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include <vector>
 #include <tuple>
 #include <queue>
+#include <deque>
 #include <algorithm>
 #include <random>
 #include <chrono>
@@ -41,7 +40,7 @@ bool is_operator(Sliperint * s, move_t m) {
             ;
         };
         case END_MOVE: {
-            assert(("END_MOVE was tested as a possible operator.", false));
+            assert(((void)"END_MOVE was tested as a possible operator.", false));
         }
     }
 
@@ -118,6 +117,11 @@ const move_t * random_move_order() {
 }
 
 
+/* Totally random search.
+ *  While unlikely, it could start infinitly circling sooner or later
+ *  crashing because of the bloated stack.
+ */
+[[ maybe_unused ]]
 static
 bool _solve(Sliperint * const sliperint, Sliperint_displayer * const display, const move_t last_direction, const int recursion_counter) {
     display->update(last_direction);
@@ -153,6 +157,12 @@ bool _solve(Sliperint * const sliperint, Sliperint_displayer * const display, co
     return false;
 }
 
+
+/* Random, but exhaustive.
+ *  Directions are checked at random and no record of previously seen states is kept,
+ *  but will look in all directions from the state its in.
+ */
+[[ maybe_unused ]]
 static
 bool _solve2(Sliperint * const sliperint, Sliperint_displayer * const display) {
     std::queue<std::tuple<Sliperint*, move_t>> branched_states;
@@ -198,7 +208,118 @@ bool _solve2(Sliperint * const sliperint, Sliperint_displayer * const display) {
     return false;
 }
 
+/* Proper BFS
+ */
+[[ maybe_unused ]]
+static
+bool _solve3(Sliperint * const sliperint, Sliperint_displayer * const display) {
+    std::vector<Sliperint*> done_with;
+    std::vector<std::tuple<Sliperint*, move_t>> to_check;
+    to_check.push_back(std::make_tuple(sliperint, END_MOVE));
+
+    int check_counter = 0;
+
+    Sliperint * front_sliperint;
+    move_t direction;
+    while (to_check.size()) {
+        front_sliperint = std::get<0>(to_check.front());
+        direction = std::get<1>(to_check.front());
+
+        *(display->sliperint) += *front_sliperint;
+        display->update(direction);
+
+        if (is_in_goal_state(front_sliperint)) {
+            display->success(check_counter);
+            return true;
+        }
+
+        for (int m = 0; m < END_MOVE; m++) {
+            Sliperint * appendix = new Sliperint(*front_sliperint);
+            if (not is_operator(appendix, (move_t)m)) {
+                continue;
+            }
+            apply_operator(appendix, (move_t)m);
+            if (std::find_if(done_with.begin(),
+                             done_with.end(),
+                             [&appendix](const Sliperint* const i) {
+                                 return *i == *appendix;
+                             }) != done_with.end()
+            ||  std::find_if(to_check.begin(),
+                             to_check.end(),
+                             [&appendix](const std::tuple<Sliperint*, move_t> &i) {
+                                 return *std::get<0>(i) == *appendix;
+                             }) != to_check.end()) {
+                continue;
+            }
+            to_check.push_back(std::make_tuple(appendix, (move_t)m));
+        }
+        done_with.push_back(front_sliperint);
+        to_check.erase(to_check.begin());
+        ++check_counter;
+    }
+
+    return false;
+}
+
+/* Proper DFS
+ */
+[[ maybe_unused ]]
+static
+bool _solve4(Sliperint * const sliperint, Sliperint_displayer * const display) {
+    std::vector<std::unique_ptr<Sliperint>> done_with;
+    std::deque<std::tuple<Sliperint*, move_t>> to_check;
+    to_check.push_back(std::make_tuple(sliperint, END_MOVE));
+
+    int check_counter = 0;
+
+    Sliperint * front_sliperint;
+    move_t direction;
+    while (to_check.size()) {
+        front_sliperint = std::get<0>(to_check.front());
+        direction = std::get<1>(to_check.front());
+        to_check.pop_front();
+
+        *(display->sliperint) += *front_sliperint;
+        display->update(direction);
+
+        if (is_in_goal_state(front_sliperint)) {
+            display->success(check_counter);
+            done_with.emplace_back(front_sliperint);
+            return true;
+        }
+
+        for (int m = 0; m < END_MOVE; m++) {
+            Sliperint * appendix = new Sliperint(*front_sliperint);
+            if (not is_operator(appendix, (move_t)m)) {
+                continue;
+            }
+            apply_operator(appendix, (move_t)m);
+            if (std::find_if(done_with.begin(),
+                             done_with.end(),
+                             [&appendix](const std::unique_ptr<Sliperint> &i) {
+                                 return *(i.get()) == *appendix;
+                             }) != done_with.end()
+            ||  std::find_if(to_check.begin(),
+                             to_check.end(),
+                             [&appendix](const std::tuple<Sliperint*, move_t> &i) {
+                                 return *std::get<0>(i) == *appendix;
+                             }) != to_check.end()) {
+                continue;
+            }
+            to_check.push_front(std::make_tuple(appendix, (move_t)m));
+        }
+        done_with.emplace_back(front_sliperint);
+        ++check_counter;
+    }
+
+    return false;
+}
+
 void solve(Sliperint * const sliperint, Sliperint_displayer * const display) {
-    //_solve(sliperint, display, END_MOVE, 0);
+    #if 0
+    _solve(sliperint, display, END_MOVE, 0);
     _solve2(sliperint, display);
+    _solve3(sliperint, display);
+    #endif
+    _solve4(sliperint, display);
 }

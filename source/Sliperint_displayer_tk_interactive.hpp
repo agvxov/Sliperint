@@ -9,10 +9,9 @@ extern "C" {
 class Sliperint_displayer_tk_interactive : public Sliperint_displayer {
 public:
     std::vector<Sliperint*> states;
-    int position = 0;
+    size_t position = 0;
 
     Sliperint_displayer_tk_interactive(Sliperint * lab) : Sliperint_displayer(lab) {
-        states.push_back(new Sliperint(*lab));
         tcl_setup(sliperint->hlayout().size(), sliperint->vlayout().size() - 1, this);
         tcl_loop_interactive();
     }
